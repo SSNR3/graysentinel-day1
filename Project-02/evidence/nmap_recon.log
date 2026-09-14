@@ -1,0 +1,23 @@
+# Nmap 7.94 scan initiated Tue Sep 15 02:15:20 2026 as: nmap -sS -sV -Pn -T4 -p 80,443,1194,8080,8443 -oN nmap_recon.log 198.51.100.0/24
+Nmap scan report for vpn.finpay.internal (198.51.100.22)
+Host is up (0.021s latency).
+PORT     STATE SERVICE VERSION
+443/tcp  open  ssl/http OpenSSL VPN Gateway (Firmware v4.2.1-legacy)
+1194/udp open  openvpn  OpenVPN 2.4.7
+
+Nmap scan report for webhook-legacy.finpay.internal (198.51.100.35)
+Host is up (0.019s latency).
+PORT     STATE SERVICE VERSION
+8443/tcp open  ssl/http Node.js Express framework (TLSv1.0 enabled)
+
+Nmap scan report for ci-stage.finpay.internal (198.51.100.78)
+Host is up (0.024s latency).
+PORT     STATE SERVICE VERSION
+8080/tcp open  http     Jetty 9.4.z / Jenkins 2.319 (Anonymous read allowed)
+
+Nmap scan report for app.finpay.internal (198.51.100.10)
+Host is up (0.015s latency).
+PORT     STATE SERVICE VERSION
+443/tcp  open  ssl/http nginx/1.24.0 (Ubuntu)
+
+# Nmap done at Tue Sep 15 02:18:04 2026 -- 256 IP addresses (4 hosts up) scanned in 164.32 seconds
