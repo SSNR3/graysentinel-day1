@@ -64,14 +64,14 @@ Modern enterprise cloud-native applications expose distributed trust boundaries 
 Organize your repo exactly as required:
 graysentinel-day1/
 └── project-01/
-    ├── README.md
-    ├── report.md
-    ├── src/
-    │   ├── threat_model.json        # Threat Dragon / PyTM / Threatspec export
-    │   └── dfd_diagram.png          # High-resolution architectural DFD
-    ├── evidence/
-    │   ├── stride_matrix.csv        # Tabulated threats & risk ratings
-    │   └── mitigation_plan.md       # Implementation controls & verification
+├── README.md
+├── report.md
+├── src/
+│   ├── threat_model.json        # Threat Dragon / PyTM / Threatspec export
+│   └── dfd_diagram.png          # High-resolution architectural DFD
+├── evidence/
+│   ├── stride_matrix.csv        # Tabulated threats & risk ratings
+│   └── mitigation_plan.md       # Implementation controls & verification
     └── screenshots/
         ├── 01_dfd_level1.png
         ├── 02_stride_analysis.png
