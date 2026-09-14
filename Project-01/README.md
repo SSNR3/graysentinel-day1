@@ -60,16 +60,21 @@ Modern enterprise cloud-native applications expose distributed trust boundaries 
 - Generated a formal Threat Modeling report identifying **14 distinct architectural flaws** (1 Critical, 3 High, 6 Medium, 4 Low).
 - Produced an engineering-ready mitigation blueprint with assigned control owners.
 
-## 9. Security Relevance
-Threat modeling shifts security to the design phase (Shift Left), preventing architectural vulnerabilities that static code analysis (SAST) and runtime web app tests (DAST) cannot remediate without massive refactoring costs.
+## Repository Layout
+Organize your repo exactly as required:
 
-## 10. Limitations
-- Threat model assumes static deployment boundaries; dynamic third-party integrations (e.g., payment webhooks) require periodic re-assessment.
-- Does not inspect live source code logic errors outside the defined architectural components.
-
-## 11. Learning
-- Architectural vulnerabilities often stem from missing authentication checks between internal components that implicitly trust internal network boundaries.
-- STRIDE provides exhaustive categorization, while DREAD prevents engineering paralysis by prioritizing remediation order.
-
-## 12. Future Improvement
-- Integrate `threat-as-code` (using `pytm` or Deciduous) directly into the CI/CD pipeline to flag architecture drift whenever infrastructure-as-code (Terraform) changes.
+Plaintext
+graysentinel-day1/
+└── project-01/
+    ├── README.md
+    ├── report.md
+    ├── src/
+    │   ├── threat_model.json        # Threat Dragon / PyTM / Threatspec export
+    │   └── dfd_diagram.png          # High-resolution architectural DFD
+    ├── evidence/
+    │   ├── stride_matrix.csv        # Tabulated threats & risk ratings
+    │   └── mitigation_plan.md       # Implementation controls & verification
+    └── screenshots/
+        ├── 01_dfd_level1.png
+        ├── 02_stride_analysis.png
+        └── 03_dread_risk_matrix.png
