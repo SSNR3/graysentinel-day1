@@ -1,0 +1,8 @@
+# 1. Ensure output directory exists
+mkdir -p evidence/
+
+# 2. Execute discovery scan
+python3 src/asm_recon_scanner.py --target-domain finpay.internal --cidr 198.51.100.0/24 --output evidence/
+
+# 3. View the generated terminal output log
+cat evidence/asm_recon_terminal.log
