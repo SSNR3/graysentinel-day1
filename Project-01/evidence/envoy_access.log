@@ -1,0 +1,2 @@
+[2026-09-15T01:38:14.218Z] "POST /v1/transactions HTTP/1.1" 200 - 348 112 16 14 "203.0.113.45" "curl/8.5.0" "8f31b814-3a9d-4e9e-a89c-48227b9c1001" "api.finpay.internal" "10.244.2.14:8443" outbound|8443||payment-engine.prod.svc.cluster.local 10.244.1.8:48912 - -
+[2026-09-15T01:42:09.654Z] "POST /v1/transactions HTTP/1.1" 401 jwt_authn_unsupported_algorithm 348 84 1 - "203.0.113.45" "curl/8.5.0" "e44d9f12-921c-4ef7-b28f-9a3d4678b882" "api.finpay.internal" - - - - -
