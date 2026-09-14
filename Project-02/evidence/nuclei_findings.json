@@ -1,0 +1,178 @@
+[
+  {
+    "template-id": "cve-2024-21893-analog-rce",
+    "info": {
+      "name": "SSL-VPN Gateway - Unauthenticated Remote Code Execution",
+      "author": "projectdiscovery",
+      "tags": ["cve", "vpn", "rce", "critical", "finpay"],
+      "reference": ["https://nvd.nist.gov/vuln/detail/CVE-2024-21893"],
+      "severity": "critical",
+      "metadata": {
+        "cvss-score": 9.8,
+        "cvss-vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+        "asset_id": "EXT-SVR-01"
+      }
+    },
+    "type": "http",
+    "host": "vpn.finpay.internal",
+    "port": "443",
+    "scheme": "https",
+    "url": "https://vpn.finpay.internal:443/dana-na/auth/url_default/welcome.cgi",
+    "matched-at": "https://vpn.finpay.internal:443/dana-ws/saml20.ws",
+    "extracted-results": [
+      "Firmware Build: v4.2.1-legacy",
+      "SAML SSO bypass vulnerable"
+    ],
+    "request": "POST /dana-ws/saml20.ws HTTP/1.1\r\nHost: vpn.finpay.internal\r\nContent-Type: text/xml\r\n\r\n<soapenv:Envelope ...",
+    "response": "HTTP/1.1 200 OK\r\nContent-Type: text/xml\r\nServer: OpenSSL-VPN\r\n\r\n<ds:SignatureValue>VULNERABLE_STUB</ds:SignatureValue>",
+    "ip": "198.51.100.22",
+    "timestamp": "2026-09-15T02:16:11.412Z",
+    "matcher-status": true
+  },
+  {
+    "template-id": "tls-deprecated-version",
+    "info": {
+      "name": "Deprecated TLS 1.0 / 1.1 Protocol Detection",
+      "author": "projectdiscovery",
+      "tags": ["tls", "ssl", "compliance", "pci-dss", "high"],
+      "reference": ["https://datatracker.ietf.org/doc/html/rfc8996"],
+      "severity": "high",
+      "metadata": {
+        "cvss-score": 7.5,
+        "cvss-vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N",
+        "asset_id": "EXT-API-02"
+      }
+    },
+    "type": "ssl",
+    "host": "webhook-legacy.finpay.internal",
+    "port": "8443",
+    "scheme": "tls",
+    "url": "tls://webhook-legacy.finpay.internal:8443",
+    "matched-at": "webhook-legacy.finpay.internal:8443",
+    "extracted-results": [
+      "TLSv1.0 (Enabled)",
+      "Cipher: TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA"
+    ],
+    "ip": "198.51.100.35",
+    "timestamp": "2026-09-15T02:16:18.105Z",
+    "matcher-status": true
+  },
+  {
+    "template-id": "s3-subdomain-takeover-cname",
+    "info": {
+      "name": "Dangling DNS Record to Amazon S3 - Subdomain Takeover",
+      "author": "projectdiscovery",
+      "tags": ["dns", "takeover", "s3", "cname", "high"],
+      "reference": ["https://github.com/EdOverflow/can-i-take-over-xyz"],
+      "severity": "high",
+      "metadata": {
+        "cvss-score": 8.1,
+        "cvss-vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:N",
+        "asset_id": "EXT-DNS-03"
+      }
+    },
+    "type": "dns",
+    "host": "dev-portal.finpay.internal",
+    "matched-at": "dev-portal.finpay.internal",
+    "extracted-results": [
+      "CNAME -> finpay-dev-docs.s3-website-us-east-1.amazonaws.com",
+      "NoSuchBucket / 404 response on target origin"
+    ],
+    "request": ";; QUESTION SECTION:\n;dev-portal.finpay.internal. IN CNAME",
+    "response": "dev-portal.finpay.internal. 300 IN CNAME finpay-dev-docs.s3-website-us-east-1.amazonaws.com.",
+    "ip": "198.51.100.40",
+    "timestamp": "2026-09-15T02:16:25.820Z",
+    "matcher-status": true
+  },
+  {
+    "template-id": "jenkins-anonymous-read",
+    "info": {
+      "name": "Public Jenkins Dashboard - Anonymous Read & Information Exposure",
+      "author": "projectdiscovery",
+      "tags": ["jenkins", "ci-cd", "misconfig", "exposure", "high"],
+      "reference": ["https://www.jenkins.io/doc/book/security/access-control/"],
+      "severity": "high",
+      "metadata": {
+        "cvss-score": 8.8,
+        "cvss-vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:L/A:L",
+        "asset_id": "EXT-DEV-04"
+      }
+    },
+    "type": "http",
+    "host": "ci-stage.finpay.internal",
+    "port": "8080",
+    "scheme": "http",
+    "url": "http://ci-stage.finpay.internal:8080/",
+    "matched-at": "http://ci-stage.finpay.internal:8080/api/json",
+    "extracted-results": [
+      "Jenkins Core v2.319",
+      "Public Jobs Exposed: finpay-pipeline-build, deploy-staging-db"
+    ],
+    "request": "GET /api/json HTTP/1.1\r\nHost: ci-stage.finpay.internal:8080\r\nAccept: application/json",
+    "response": "HTTP/1.1 200 OK\r\nContent-Type: application/json;charset=utf-8\r\nX-Jenkins: 2.319\r\n\r\n{\"_class\":\"hudson.model.Hudson\",\"jobs\":[{\"name\":\"finpay-pipeline-build\"}]}",
+    "ip": "198.51.100.78",
+    "timestamp": "2026-09-15T02:16:34.901Z",
+    "matcher-status": true
+  },
+  {
+    "template-id": "aws-s3-public-bucket-list",
+    "info": {
+      "name": "Amazon S3 Bucket Public Listing Enabled",
+      "author": "projectdiscovery",
+      "tags": ["aws", "s3", "cloud", "misconfig", "medium"],
+      "reference": ["https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-block-public-access.html"],
+      "severity": "medium",
+      "metadata": {
+        "cvss-score": 6.5,
+        "cvss-vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
+        "asset_id": "EXT-STR-05"
+      }
+    },
+    "type": "http",
+    "host": "finpay-db-backups-temp.s3.amazonaws.com",
+    "port": "443",
+    "scheme": "https",
+    "url": "https://finpay-db-backups-temp.s3.amazonaws.com/?max-keys=5",
+    "matched-at": "https://finpay-db-backups-temp.s3.amazonaws.com/?max-keys=5",
+    "extracted-results": [
+      "Bucket: finpay-db-backups-temp",
+      "Sample Key: staging_dump_2026_q2.tar.gz"
+    ],
+    "request": "GET /?max-keys=5 HTTP/1.1\r\nHost: finpay-db-backups-temp.s3.amazonaws.com",
+    "response": "HTTP/1.1 200 OK\r\nContent-Type: application/xml\r\n\r\n<ListBucketResult><Name>finpay-db-backups-temp</Name><Key>staging_dump_2026_q2.tar.gz</Key></ListBucketResult>",
+    "ip": "52.216.0.1",
+    "timestamp": "2026-09-15T02:16:42.115Z",
+    "matcher-status": true
+  },
+  {
+    "template-id": "http-missing-security-headers",
+    "info": {
+      "name": "HTTP Strict Transport & Content Security Headers Missing",
+      "author": "projectdiscovery",
+      "tags": ["headers", "hsts", "csp", "misconfig", "low"],
+      "reference": ["https://owasp.org/www-project-secure-headers/"],
+      "severity": "low",
+      "metadata": {
+        "cvss-score": 4.3,
+        "cvss-vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:L/A:N",
+        "asset_id": "EXT-WEB-06"
+      }
+    },
+    "type": "http",
+    "host": "app.finpay.internal",
+    "port": "443",
+    "scheme": "https",
+    "url": "https://app.finpay.internal/",
+    "matched-at": "https://app.finpay.internal/",
+    "extracted-results": [
+      "Missing: Strict-Transport-Security",
+      "Missing: Content-Security-Policy",
+      "Missing: Permissions-Policy"
+    ],
+    "request": "GET / HTTP/1.1\r\nHost: app.finpay.internal\r\nUser-Agent: Mozilla/5.0",
+    "response": "HTTP/1.1 200 OK\r\nServer: nginx/1.24.0 (Ubuntu)\r\nContent-Type: text/html\r\n\r\n<!DOCTYPE html>...",
+    "ip": "198.51.100.10",
+    "timestamp": "2026-09-15T02:16:49.034Z",
+    "matcher-status": true
+  }
+]
