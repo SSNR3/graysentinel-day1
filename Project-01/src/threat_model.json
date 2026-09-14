@@ -1,0 +1,206 @@
+{
+  "version": "2.0.0",
+  "summary": {
+    "title": "FinPay Core Services Threat Model",
+    "owner": "Security Architecture Team",
+    "description": "Architectural threat model and STRIDE assessment for FinPay Core Services covering public DMZ, EKS service mesh, and isolated data persistence tiers."
+  },
+  "detail": {
+    "contributors": [
+      { "name": "Security Architecture Lead" }
+    ],
+    "diagrams": [
+      {
+        "title": "FinPay Core DFD Level 1",
+        "id": 0,
+        "diagramType": "STRIDE",
+        "placeholder": "Data flow diagram for FinPay hybrid cloud microservices",
+        "cells": [
+          {
+            "id": "actor-01",
+            "type": "tm.Actor",
+            "shape": "actor",
+            "name": "External Client",
+            "hasOpenThreats": false,
+            "description": "Public web and mobile users accessing the payment gateway."
+          },
+          {
+            "id": "tb-01",
+            "type": "tm.Boundary",
+            "shape": "boundary",
+            "name": "TB-01: Public Perimeter (DMZ)",
+            "description": "Perimeter boundary between the public internet and AWS edge services."
+          },
+          {
+            "id": "process-01",
+            "type": "tm.Process",
+            "shape": "process",
+            "name": "AWS API Gateway / WAF",
+            "hasOpenThreats": true,
+            "threats": [
+              {
+                "id": "TH-01",
+                "title": "Forged JWT via Key Confusion / None Alg",
+                "type": "Spoofing",
+                "status": "Open",
+                "severity": "High",
+                "score": "8.2",
+                "description": "Attacker crafts unsigned tokens or exploits symmetric/asymmetric key confusion to spoof authenticated users.",
+                "mitigation": "Enforce strict RS256 algorithm whitelisting and dynamic JWKS validation against Entra ID endpoints."
+              },
+              {
+                "id": "TH-05",
+                "title": "Resource Exhaustion via Unthrottled Endpoints",
+                "type": "Denial of Service",
+                "status": "Open",
+                "severity": "High",
+                "score": "8.2",
+                "description": "Flooding endpoints with unindexed search queries causes connection pool starvation across internal components.",
+                "mitigation": "Deploy AWS WAF token-bucket rate-limiting rules and API Gateway per-client usage plans."
+              }
+            ]
+          },
+          {
+            "id": "tb-02",
+            "type": "tm.Boundary",
+            "shape": "boundary",
+            "name": "TB-02: Kubernetes Ingress / Service Mesh",
+            "description": "Boundary separating the edge reverse proxy from internal private EKS pods."
+          },
+          {
+            "id": "process-02",
+            "type": "tm.Process",
+            "shape": "process",
+            "name": "Customer-Service Pod",
+            "hasOpenThreats": false,
+            "description": "EKS microservice managing user metadata and account profiles."
+          },
+          {
+            "id": "process-03",
+            "type": "tm.Process",
+            "shape": "process",
+            "name": "Payment-Engine Pod",
+            "hasOpenThreats": true,
+            "threats": [
+              {
+                "id": "TH-03",
+                "title": "Unsigned Financial Audit Trails",
+                "type": "Repudiation",
+                "status": "Open",
+                "severity": "High",
+                "score": "7.0",
+                "description": "Transactional records lack cryptographic nonces or write-once retention, allowing malicious alteration.",
+                "mitigation": "Stream immutable audit logs directly to Amazon S3 Object Lock with WORM compliance enabled."
+              },
+              {
+                "id": "TH-06",
+                "title": "Broken Object Level Authorization (BOLA)",
+                "type": "Elevation of Privilege",
+                "status": "Open",
+                "severity": "Critical",
+                "score": "9.0",
+                "description": "Manipulating account_id headers in payment capture payloads allows unauthorized balance deductions.",
+                "mitigation": "Implement Open Policy Agent (OPA) fine-grained authorization comparing JWT subject claim against target account IDs."
+              }
+            ]
+          },
+          {
+            "id": "tb-03",
+            "type": "tm.Boundary",
+            "shape": "boundary",
+            "name": "TB-03: Isolated Database Subnet",
+            "description": "Restricted subnet hosting persistent relational data stores."
+          },
+          {
+            "id": "store-01",
+            "type": "tm.Store",
+            "shape": "store",
+            "name": "Amazon RDS PostgreSQL",
+            "hasOpenThreats": true,
+            "threats": [
+              {
+                "id": "TH-04",
+                "title": "PII Exfiltration via Over-Privileged Service Account",
+                "type": "Information Disclosure",
+                "status": "Open",
+                "severity": "High",
+                "score": "8.4",
+                "description": "Direct read queries from compromised pod credentials leak unencrypted cardholder data and tax identifiers.",
+                "mitigation": "Enforce AWS KMS column-level envelope encryption and switch to IAM ephemeral database authentication tokens."
+              }
+            ]
+          },
+          {
+            "id": "store-02",
+            "type": "tm.Store",
+            "shape": "store",
+            "name": "Amazon S3 Audit Bucket",
+            "hasOpenThreats": false,
+            "description": "Write-once read-many compliance log bucket."
+          },
+          {
+            "id": "flow-01",
+            "type": "tm.Flow",
+            "shape": "flow",
+            "name": "HTTPS (TLS 1.3)",
+            "source": "actor-01",
+            "target": "process-01",
+            "hasOpenThreats": false,
+            "description": "External user requests crossing the public perimeter."
+          },
+          {
+            "id": "flow-02",
+            "type": "tm.Flow",
+            "shape": "flow",
+            "name": "Reverse Proxy Dispatch",
+            "source": "process-01",
+            "target": "process-02",
+            "hasOpenThreats": false,
+            "description": "Forwarded API requests entering the private compute cluster."
+          },
+          {
+            "id": "flow-03",
+            "type": "tm.Flow",
+            "shape": "flow",
+            "name": "Internal Pod-to-Pod RPC",
+            "source": "process-02",
+            "target": "process-03",
+            "hasOpenThreats": true,
+            "threats": [
+              {
+                "id": "TH-02",
+                "title": "Pod-to-Pod Lateral Packet Tampering",
+                "type": "Tampering",
+                "status": "Open",
+                "severity": "Medium",
+                "score": "6.6",
+                "description": "Unencrypted inter-service traffic allows compromised neighbor pods to sniff and modify payment parameters.",
+                "mitigation": "Implement Istio/Cilium mutual TLS (mTLS) with SPIFFE workload identity and explicit Layer 7 network policies."
+              }
+            ]
+          },
+          {
+            "id": "flow-04",
+            "type": "tm.Flow",
+            "shape": "flow",
+            "name": "SQL Persistence Queries",
+            "source": "process-03",
+            "target": "store-01",
+            "hasOpenThreats": false,
+            "description": "Database queries crossing into the database subnet."
+          },
+          {
+            "id": "flow-05",
+            "type": "tm.Flow",
+            "shape": "flow",
+            "name": "Immutable Audit Streaming",
+            "source": "process-03",
+            "target": "store-02",
+            "hasOpenThreats": false,
+            "description": "Streaming transaction logs to tamper-proof cloud storage."
+          }
+        ]
+      }
+    ]
+  }
+}
