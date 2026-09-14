@@ -62,8 +62,6 @@ Modern enterprise cloud-native applications expose distributed trust boundaries 
 
 ## Repository Layout
 Organize your repo exactly as required:
-
-Plaintext
 graysentinel-day1/
 └── project-01/
     ├── README.md
